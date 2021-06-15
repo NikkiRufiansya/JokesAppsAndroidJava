@@ -4,13 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
+import com.developer.kalert.KAlertDialog;
 import com.example.jokesappandroidjava.adapter.AdapterJokes;
 import com.example.jokesappandroidjava.api.JokesService;
 import com.example.jokesappandroidjava.helper.UrlApi;
 import com.example.jokesappandroidjava.model.JokesModel;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private List<JokesModel> jokesModels = new ArrayList<>();
     private AdapterJokes adapterJokes;
     private JokesService jokesService = UrlApi.getJokesService();
+    private ShimmerFrameLayout shimmerFrameLayout;
+    private KAlertDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +47,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void init() {
         listJokeRV = findViewById(R.id.listJokeRV);
+        shimmerFrameLayout = findViewById(R.id.shimmerLoading);
     }
 
     private void getDataJokes() {
+        KAlertDialog pDialog = new KAlertDialog(this, KAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Loading");
+        pDialog.setCancelable(false);
+        pDialog.show();
         jokesService.getJokes().enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -62,20 +74,37 @@ public class MainActivity extends AppCompatActivity {
                         adapterJokes = new AdapterJokes(MainActivity.this, jokesModels);
                         listJokeRV.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
                         listJokeRV.setAdapter(adapterJokes);
+                        shimmerFrameLayout.startShimmerAnimation();
+                        shimmerFrameLayout.setVisibility(View.GONE);
+                        listJokeRV.setVisibility(View.VISIBLE);
+                        pDialog.dismiss();
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
+                        pDialog.dismiss();
                     }
                 } else {
                     Toast.makeText(MainActivity.this, "Load Data Error", Toast.LENGTH_SHORT).show();
+                    pDialog.dismiss();
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 t.printStackTrace();
+                pDialog.dismiss();
             }
         });
     }
 
+    @Override
+    protected void onResume() {
+        shimmerFrameLayout.startShimmerAnimation();
+        super.onResume();
+    }
 
+    @Override
+    protected void onPause() {
+        shimmerFrameLayout.stopShimmerAnimation();
+        super.onPause();
+    }
 }

@@ -2,11 +2,19 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/cardLayout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="20dp"
+    app:cardCornerRadius="10dp"
     android:layout_margin="10dp">
 
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <RelativeLayout
+        android:id="@+id/layoutJokes"
+        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -15,20 +23,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_margin="20dp"
-            android:fontFamily="@font/awesome_quote"
-            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis neque purus, rhoncus ac justo et, consequat volutpat tellus. Aenean pellentesque luctus dolor suscipit consequat." />
+            android:layout_marginHorizontal="20dp"
+            android:fontFamily="@font/funny"
+            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis neque purus, rhoncus ac justo et, consequat volutpat tellus. Aenean pellentesque luctus dolor suscipit consequat ?" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutPunchline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/btnSeeNow"
+            android:id="@+id/punchline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/setup"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="10dp"
-            android:text="See now"
-            android:textAllCaps="false"
-            android:textColor="@color/blue"
-            android:textStyle="bold" />
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/black"
+            android:layout_marginHorizontal="20dp"
+            android:fontFamily="@font/funny"
+            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis neque purus," />
+
     </RelativeLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

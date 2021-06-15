@@ -1,16 +1,17 @@
 package com.example.jokesappandroidjava.adapter;
 
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.jokesappandroidjava.DetailJokes;
 import com.example.jokesappandroidjava.R;
 import com.example.jokesappandroidjava.model.JokesModel;
 
@@ -27,22 +28,23 @@ public class AdapterJokes extends RecyclerView.Adapter<AdapterJokes.MyView> {
 
     @NonNull
     @Override
-    public AdapterJokes.MyView onCreateViewHolder(@NonNull  ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_jokes,parent, false);
+    public AdapterJokes.MyView onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_jokes, parent, false);
         return new MyView(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull  AdapterJokes.MyView holder, int position) {
+    public void onBindViewHolder(@NonNull AdapterJokes.MyView holder, int position) {
         holder.setup.setText(data.get(position).getSetup());
-        holder.btnSeeNow.setOnClickListener(v -> {
-            Intent intent = new Intent(context, DetailJokes.class);
-            intent.putExtra("id", data.get(position).getId());
-            intent.putExtra("type", data.get(position).getType());
-            intent.putExtra("setup", data.get(position).getSetup());
-            intent.putExtra("punchline", data.get(position).getPunchline());
-            context.startActivity(intent);
+        holder.punchline.setText("*"+data.get(position).getPunchline()+"*");
+        boolean isExpanded = data.get(position).isExpanded();
+        holder.layoutPunchline.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+        holder.cardLayout.setOnClickListener(v -> {
+            JokesModel jokesModel = data.get(position);
+            jokesModel.setExpanded(!jokesModel.isExpanded());
+            notifyDataSetChanged();
         });
+
     }
 
     @Override
@@ -51,11 +53,16 @@ public class AdapterJokes extends RecyclerView.Adapter<AdapterJokes.MyView> {
     }
 
     public class MyView extends RecyclerView.ViewHolder {
-        public TextView setup, btnSeeNow;
+        public TextView setup, punchline;
+        public RelativeLayout layoutPunchline;
+        public CardView cardLayout;
+
         public MyView(@NonNull View itemView) {
             super(itemView);
             setup = itemView.findViewById(R.id.setup);
-            btnSeeNow = itemView.findViewById(R.id.btnSeeNow);
+            punchline = itemView.findViewById(R.id.punchline);
+            layoutPunchline = itemView.findViewById(R.id.layoutPunchline);
+            cardLayout = itemView.findViewById(R.id.cardLayout);
         }
     }
 }
