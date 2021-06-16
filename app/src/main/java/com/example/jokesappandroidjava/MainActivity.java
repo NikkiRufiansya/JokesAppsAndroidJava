@@ -2,6 +2,7 @@ package com.example.jokesappandroidjava;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
@@ -98,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                                     jokesObject.getString("punchline")));
                         }
                         adapterJokes = new AdapterJokes(MainActivity.this, jokesModels);
-                        listJokeRV.setLayoutManager(new GridLayoutManager(MainActivity.this, 2));
+                        listJokeRV.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                         listJokeRV.setAdapter(adapterJokes);
                         shimmerFrameLayout.startShimmerAnimation();
                         shimmerFrameLayout.setVisibility(View.GONE);
@@ -106,12 +107,18 @@ public class MainActivity extends AppCompatActivity {
                         pDialog.dismiss();
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
+                        new AestheticDialog.Builder(MainActivity.this, DialogStyle.FLAT, DialogType.ERROR)
+                                .setTitle("Opss...")
+                                .setMessage("Unable to load data repeat again !")
+                                .show();
+                        pDialog.dismiss();
+
                     }
                     pDialog.dismiss();
                 } else {
-                    new AestheticDialog.Builder(MainActivity.this, DialogStyle.TOASTER, DialogType.ERROR)
+                    new AestheticDialog.Builder(MainActivity.this, DialogStyle.FLAT, DialogType.ERROR)
                             .setTitle("Opss...")
-                            .setMessage("Something wrong reload again !")
+                            .setMessage("Unable to load data repeat again !")
                             .show();
                     pDialog.dismiss();
                 }
@@ -120,6 +127,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 t.printStackTrace();
+                new AestheticDialog.Builder(MainActivity.this, DialogStyle.FLAT, DialogType.ERROR)
+                        .setTitle("Opss...")
+                        .setMessage("Unable to load data repeat again !")
+                        .show();
+                pDialog.dismiss();
+
             }
         });
     }
