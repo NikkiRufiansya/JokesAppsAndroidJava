@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.developer.kalert.KAlertDialog;
 import com.example.jokesappandroidjava.adapter.AdapterJokes;
@@ -15,6 +17,9 @@ import com.example.jokesappandroidjava.api.JokesService;
 import com.example.jokesappandroidjava.helper.UrlApi;
 import com.example.jokesappandroidjava.model.JokesModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.thecode.aestheticdialogs.AestheticDialog;
+import com.thecode.aestheticdialogs.DialogStyle;
+import com.thecode.aestheticdialogs.DialogType;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,14 +40,35 @@ public class MainActivity extends AppCompatActivity {
     private AdapterJokes adapterJokes;
     private JokesService jokesService = UrlApi.getJokesService();
     private ShimmerFrameLayout shimmerFrameLayout;
-    private KAlertDialog pDialog;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-        getDataJokes();
+        if (isConnected(MainActivity.this)){
+            getDataJokes();
+        }else{
+            new AestheticDialog.Builder(MainActivity.this, DialogStyle.CONNECTIFY, DialogType.ERROR)
+                    .setTitle("Opss...")
+                    .setMessage("No Available Connection!")
+                    .show();
+        }
+    }
+
+    public boolean isConnected(Context context) {
+        ConnectivityManager cm = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netinfo = cm.getActiveNetworkInfo();
+        if (netinfo != null && netinfo.isConnectedOrConnecting()) {
+            android.net.NetworkInfo wifi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            android.net.NetworkInfo mobile = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if ((mobile != null && mobile.isConnectedOrConnecting()) || (wifi != null && wifi.isConnectedOrConnecting()))
+                return true;
+            else return false;
+        } else
+            return false;
     }
 
     private void init() {
@@ -80,10 +106,13 @@ public class MainActivity extends AppCompatActivity {
                         pDialog.dismiss();
                     } catch (IOException | JSONException e) {
                         e.printStackTrace();
-                        pDialog.dismiss();
                     }
+                    pDialog.dismiss();
                 } else {
-                    Toast.makeText(MainActivity.this, "Load Data Error", Toast.LENGTH_SHORT).show();
+                    new AestheticDialog.Builder(MainActivity.this, DialogStyle.TOASTER, DialogType.ERROR)
+                            .setTitle("Opss...")
+                            .setMessage("Something wrong reload again !")
+                            .show();
                     pDialog.dismiss();
                 }
             }
@@ -91,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 t.printStackTrace();
-                pDialog.dismiss();
             }
         });
     }
